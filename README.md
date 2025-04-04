@@ -11,7 +11,7 @@
 
 ## 📚 Introduction of Lecture
 
-- [**강의링크**](https://kbig.kr/portal/kbig/educationalPracticeContent/edu_seminar?bltnNo=11742800453295)
+- [**강의링크**](https://kbig.kr/portal/kbig/educationalPracticeContent/edu_seminar?bltnNo=11742800453295): [2025년 4월] 데이터 • AI 활용 역량강화과정
   
 ![Image](https://github.com/user-attachments/assets/2419004c-a58b-45af-a589-50ad9e6f9841)
 
