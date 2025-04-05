@@ -308,6 +308,114 @@ def prediction_class(model, X_train, Y_train, X_test, Y_test,
     return Score_te, Score_trte
 
 
+def explanation_SHAP_KK(model, X_train, X_test, X_colname,
+                        MAX_DISPLAY=10, model_type='linear',
+                        link='logit', sample_size=1,
+                        sample_size_1000=1000,
+                        plot_interaction=True,
+                        feature_display_range=None):
+    """
+    SHAP 설명을 제공하는 함수.
+
+    Parameters:
+    - model: 학습된 모델 (예: XGBClassifier, LogisticRegression)
+    - X_train: 훈련 데이터 (특징 행렬)
+    - X_test: 테스트 데이터
+    - X_colname: 특성 이름 리스트 (예: ['feature1', 'feature2', ...])
+    - MAX_DISPLAY: SHAP 설명에서 표시할 최대 특성 수 (기본값 10)
+    - model_type: 모델 유형 ('linear', 'tree', 'svm', 'auto' 등, 기본값 'linear')
+    - link: 로짓 링크 함수 (기본값 'logit')
+    - sample_size: 개별 설명을 위한 샘플 크기 (기본값 1)
+    - sample_size_1000: 1000개의 샘플에 대해 설명할 때 샘플 크기 (기본값 1000)
+    - plot_interaction: 상호작용 설명을 플로팅할지 여부 (기본값 True)
+    - feature_display_range: 특성 표시 범위 (기본값 None)
+    """
+
+    # SHAP 설명자 생성
+    explainer = shap.Explainer(model, X_train, algorithm=model_type, feature_names=X_colname)
+    shap_values_train = explainer(X_train)
+    shap_values_test = explainer(X_test)
+
+    # 개별 설명 (샘플 1) for Train
+    shap_sample_train = shap_values_train.sample(sample_size)
+    print("Train Sample Explanation:")
+    shap.decision_plot(base_value=shap_sample_train.base_values,
+                       shap_values=shap_sample_train.values,
+                       features=shap_sample_train.data,
+                       feature_names=X_colname,
+                       feature_display_range=feature_display_range or slice(None, -MAX_DISPLAY, -1),
+                       link=link, highlight=0)
+    shap.initjs()
+    display(shap.force_plot(base_value=shap_sample_train.base_values,
+                            shap_values=shap_sample_train.values,
+                            features=shap_sample_train.data,
+                            feature_names=X_colname,
+                            link=link))
+
+    # 개별 설명 (샘플 1) for Test
+    shap_sample_test = shap_values_test.sample(sample_size)
+    print("Test Sample Explanation:")
+    shap.decision_plot(base_value=shap_sample_test.base_values,
+                       shap_values=shap_sample_test.values,
+                       features=shap_sample_test.data,
+                       feature_names=X_colname,
+                       feature_display_range=feature_display_range or slice(None, -MAX_DISPLAY, -1),
+                       link=link, highlight=0)
+    shap.initjs()
+    display(shap.force_plot(base_value=shap_sample_test.base_values,
+                            shap_values=shap_sample_test.values,
+                            features=shap_sample_test.data,
+                            feature_names=X_colname,
+                            link=link))
+
+    # 개별 설명 (샘플 1000) for Train
+    shap_sample_train = shap_values_train.sample(sample_size_1000)
+    print("Train Sample 1000 Explanation:")
+    display(shap.force_plot(base_value=shap_sample_train.base_values,
+                            shap_values=shap_sample_train.values,
+                            features=shap_sample_train.data,
+                            feature_names=X_colname,
+                            link=link))
+
+    # 개별 설명 (샘플 1000) for Test
+    shap_sample_test = shap_values_test.sample(sample_size_1000)
+    print("Test Sample 1000 Explanation:")
+    display(shap.force_plot(base_value=shap_sample_test.base_values,
+                            shap_values=shap_sample_test.values,
+                            features=shap_sample_test.data,
+                            feature_names=X_colname,
+                            link=link))
+
+    # 전체 설명 (beeswarm 플롯) for Train
+    print("Train Total Explanation (Beeswarm):")
+    shap.plots.beeswarm(shap_values=shap_values_train, max_display=MAX_DISPLAY)
+
+    # 전체 설명 (beeswarm 플롯) for Test
+    print("Test Total Explanation (Beeswarm):")
+    shap.plots.beeswarm(shap_values=shap_values_test, max_display=MAX_DISPLAY)
+
+    # 상호작용 설명 (dependence plot) for Train
+    if plot_interaction:
+        print("Train Total Explanation by Interaction:")
+        shap_importance_train = np.abs(shap_values_train.values).mean(axis=0)
+        feature_order_train = np.argsort(shap_importance_train)[::-1]
+        feature_order_train = [X_colname[i] for i in feature_order_train]
+
+        for col in feature_order_train[:MAX_DISPLAY]:
+            shap.dependence_plot(ind=col, shap_values=shap_values_train.values,
+                                 features=X_train, feature_names=X_colname)
+
+        # 상호작용 설명 (dependence plot) for Test
+        print("Test Total Explanation by Interaction:")
+        shap_importance_test = np.abs(shap_values_test.values).mean(axis=0)
+        feature_order_test = np.argsort(shap_importance_test)[::-1]
+        feature_order_test = [X_colname[i] for i in feature_order_test]
+
+        for col in feature_order_test[:MAX_DISPLAY]:
+            shap.dependence_plot(ind=col, shap_values=shap_values_test.values,
+                                 features=X_test, feature_names=X_colname)
+
+
 ### Date and Author: 20240301, Kyungwon Kim ###
 ### 1개의 문장에 대해서 불필요한 것들 제거하는 기초 전처리
 def text_preprocessor(text, language='korean', del_number=False, del_bracket_content=False, stop_words=[]):
