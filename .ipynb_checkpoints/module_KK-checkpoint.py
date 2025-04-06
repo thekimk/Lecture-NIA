@@ -17,9 +17,17 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split, TimeSeriesSplit
+from sklearn.preprocessing import LabelEncoder, LabelBinarizer, OneHotEncoder
 from sklearn.preprocessing import Normalizer, MinMaxScaler, StandardScaler, RobustScaler
 import random
 
+import matplotlib
+import matplotlib.font_manager as fm
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.express as px
+
+from sklearn.utils import class_weight
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
@@ -35,11 +43,24 @@ from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 from sklearn.metrics import roc_curve, auc, precision_recall_curve
 
-import matplotlib
-import matplotlib.font_manager as fm
-import matplotlib.pyplot as plt
-import seaborn as sns
-import plotly.express as px
+import tensorflow as tf
+tf.get_logger().setLevel('ERROR')
+tf.get_logger().warning('test')
+from tensorflow import keras
+from tensorflow.keras import layers, regularizers
+from tensorflow.keras.models import Sequential, Model, load_model
+from tensorflow.keras.layers import Input, Dense, Activation, Flatten, Dropout
+from tensorflow.keras.layers import BatchNormalization, Embedding, Reshape, RepeatVector, Permute, Multiply, Lambda
+from tensorflow.keras.layers import Conv1D, MaxPooling1D
+from tensorflow.keras.layers import SimpleRNN, LSTM, GRU
+from keras.layers import Conv2D, Convolution2D, MaxPooling2D, GlobalMaxPooling2D, ZeroPadding2D, AveragePooling2D, GlobalAveragePooling2D, UpSampling2D
+from keras.layers import Conv3D, Convolution3D, MaxPooling3D, AveragePooling3D, UpSampling3D
+# from keras.layers import TimeDistributed, CuDDN, CuDNNLSTM
+from tensorflow.keras.utils import plot_model
+from tensorflow.keras.callbacks import Callback, EarlyStopping, ModelCheckpoint
+from tensorflow.keras.optimizers import SGD, Adam
+from keras_tqdm import tqdm_callback, TQDMNotebookCallback
+import keras.backend as K
 
 # Text
 import re
@@ -414,6 +435,222 @@ def explanation_SHAP_KK(model, X_train, X_test, X_colname,
         for col in feature_order_test[:MAX_DISPLAY]:
             shap.dependence_plot(ind=col, shap_values=shap_values_test.values,
                                  features=X_test, feature_names=X_colname)
+
+
+### Date and Author: 20250104, Kyungwon Kim ###
+### Data reshaping for deep learning Y to OneHotEncoding-Y
+def reshape_YtoOneHot(Y_train, Y_test):
+    # 변환
+    ohe = OneHotEncoder(sparse_output=False)
+    ohe.fit(Y_train)
+    Y_tr_reshape = ohe.transform(Y_train)
+    Y_te_reshape = ohe.transform(Y_test)
+
+    # 정리
+    columns_ohe = [Y_train.columns[0]+'_'+str(i) for i in np.unique(Y_train)]
+    Y_tr_reshape = pd.DataFrame(Y_tr_reshape, columns=columns_ohe)
+    Y_te_reshape = pd.DataFrame(Y_te_reshape, columns=columns_ohe)
+    print('Y_train_reshape:', Y_train.shape, '-->', Y_tr_reshape.shape)
+    print('Y_test_reshape:', Y_test.shape, '-->', Y_te_reshape.shape)
+
+    return Y_tr_reshape, Y_te_reshape
+
+
+### Date and Author: 20250104, Kyungwon Kim ###
+### Data reshaping for deep learning X to 3D-X
+def reshape_X2Dto3D(X_train, X_test):
+    # 변환
+    X_tr_reshape = X_train.reshape(-1, X_train.shape[1], 1)
+    X_te_reshape = X_test.reshape(-1, X_test.shape[1], 1)
+    print('X_train_reshape:', X_train.shape, '-->', X_tr_reshape.shape)
+    print('X_test_reshape:', X_test.shape, '-->', X_te_reshape.shape)
+
+    return X_tr_reshape, X_te_reshape
+
+
+### Date and Author: 20230802, Kyungwon Kim ###
+### MLP
+def modeling_MLP(X_train, Y_train, 
+                 node_MLP=[256, 128, 64, 32, 10],
+                 HIDDEN_ACTIVATION='relu', OUTPUT_ACTIVATION='sigmoid',
+                 REGULARIZER=None, DROPOUT_RATIO=0.2, MODEL_SUMMARY=True,
+                 LOSS='binary_crossentropy', OPTIMIZER=None, LEARNING_RATE=0.001):
+    # 네트워크 생성
+    inputs = Input(shape=(X_train.shape[1],))
+    hiddens = Dense(node_MLP[0], activation=HIDDEN_ACTIVATION, kernel_regularizer=REGULARIZER)(inputs)
+    hiddens = Dropout(DROPOUT_RATIO)(hiddens)
+    for node in node_MLP[1:]:
+        hiddens = Dense(node, activation=HIDDEN_ACTIVATION, kernel_regularizer=REGULARIZER)(hiddens)
+        hiddens = Dropout(DROPOUT_RATIO)(hiddens)
+    output = Dense(Y_train.shape[1], activation=OUTPUT_ACTIVATION)(hiddens)  
+    model = Model(inputs, output)  
+    if MODEL_SUMMARY:
+        model.summary() 
+
+    # 데이터 학습기준 설정 
+    ## 메트릭스
+    if LOSS in ['mae', 'mse', 'mape']:
+        METRICS = [keras.metrics.RootMeanSquaredError(name='RMSE'), 
+                   keras.metrics.MeanSquaredLogarithmicError(name='MSLE'), 
+                   keras.metrics.MeanAbsolutePercentageError(name='MAPE')]
+    if LOSS in ['binary_crossentropy', 'categorical_crossentropy', 'sparse_categorical_crossentropy']:
+        METRICS = [keras.metrics.F1Score(name='F1-score'), 
+                   keras.metrics.Accuracy(name='Accuracy'), 
+                   keras.metrics.AUC(name='AUC')]
+    ## 옵티마이저
+    if OPTIMIZER == None:
+        OPTIMIZER = Adam(learning_rate=LEARNING_RATE)
+    else:
+        OPTIMIZER = OPTIMIZER
+    ## 설정
+    model.compile(loss=LOSS, optimizer=OPTIMIZER, metrics=METRICS)
+    
+    return model
+
+
+### Date and Author: 20230802, Kyungwon Kim ###
+### CNN1D
+def modeling_CNN1D(X_train, Y_train, 
+                   node_CNN1=[128, 256, 128], node_CNN2=[64, 32, 10],
+                   HIDDEN_ACTIVATION='relu', OUTPUT_ACTIVATION='sigmoid',
+                   KERNEL_SIZE=5, STRIDE=1, PADDING='same',
+                   POOL_SIZE=2, POOL_STRIDE=2,
+                   REGULARIZER=None, DROPOUT_RATIO=0.2, MODEL_SUMMARY=True,
+                   LOSS='binary_crossentropy', OPTIMIZER=None, LEARNING_RATE=0.001):
+    # 네트워크 생성
+    inputs = Input(shape=(X_train.shape[1], X_train.shape[2]))    
+    hiddens = Conv1D(node_CNN1[0], kernel_size=KERNEL_SIZE, strides=STRIDE, padding=PADDING, 
+                     activation=HIDDEN_ACTIVATION)(inputs)
+    hiddens = MaxPooling1D(pool_size=POOL_SIZE, strides=POOL_STRIDE)(hiddens)
+    hiddens = Dropout(DROPOUT_RATIO)(hiddens)
+    for node in node_CNN1[1:]:
+        hiddens = Conv1D(node, kernel_size=KERNEL_SIZE, strides=STRIDE, padding=PADDING, 
+                         activation=HIDDEN_ACTIVATION)(hiddens)
+        hiddens = MaxPooling1D(pool_size=POOL_SIZE, strides=POOL_STRIDE)(hiddens)
+        hiddens = Dropout(DROPOUT_RATIO)(hiddens)
+        
+    hiddens = Flatten()(hiddens)
+    for node in node_CNN2:
+        hiddens = Dense(node, activation=HIDDEN_ACTIVATION)(hiddens)  
+        hiddens = Dropout(DROPOUT_RATIO)(hiddens)
+    output = Dense(Y_train.shape[1], activation=OUTPUT_ACTIVATION)(hiddens)  
+    model = Model(inputs, output)  
+    if MODEL_SUMMARY:
+        model.summary() 
+
+    # 데이터 학습기준 설정
+    ## 메트릭스
+    if LOSS in ['mae', 'mse', 'mape']:
+        METRICS = [keras.metrics.RootMeanSquaredError(name='RMSE'), 
+                   keras.metrics.MeanSquaredLogarithmicError(name='MSLE'), 
+                   keras.metrics.MeanAbsolutePercentageError(name='MAPE')]
+    if LOSS in ['binary_crossentropy', 'categorical_crossentropy', 'sparse_categorical_crossentropy']:
+        METRICS = [keras.metrics.F1Score(name='F1-score'), 
+                   keras.metrics.Accuracy(name='Accuracy'), 
+                   keras.metrics.AUC(name='AUC')]
+    ## 옵티마이저
+    if OPTIMIZER == None:
+        OPTIMIZER = Adam(learning_rate=LEARNING_RATE)
+    else:
+        OPTIMIZER = OPTIMIZER
+    ## 설정
+    model.compile(loss=LOSS, optimizer=OPTIMIZER, metrics=METRICS)
+    
+    return model
+
+
+### Date and Author: 20250103, Kyungwon Kim ###
+### Learning Model for Classification
+def learning(model, X_train, X_test, Y_train, 
+             WEIGHT_METHOD=None,
+             VALIDATION_SPLIT=0.2, VALIDATION_DATA=None, 
+             BATCH_SIZE=64, EPOCHS=50, VERBOSE=0,
+             MONITOR='val_accuracy', MONITOR_MODE='max', EARLYSTOP_PATIENT=None,
+             LEARNING_PLOT=True, shap=False, X_top_display=None, X_colname=None):
+    # 세팅
+    if VALIDATION_DATA != None:
+        VALIDATION_SPLIT = 0.2
+    if EARLYSTOP_PATIENT == None:
+        EARLYSTOP_PATIENT = int(EPOCHS * 0.1)
+        
+    # 학습하기
+    import os
+    from datetime import datetime
+    ## 모델저장 변수명
+    if len(Y_train.unique()) < 10:
+        name_final = 'DL_Class_'+''.join(str(datetime.now()).split(' ')[0].split('-'))+'_'+''.join(str(datetime.now()).split(' ')[1][:-7].split(':'))+'.keras'
+    else:
+        name_final = 'DL_Reg_'+''.join(str(datetime.now()).split(' ')[0].split('-'))+'_'+''.join(str(datetime.now()).split(' ')[1][:-7].split(':'))+'.keras'
+    Model_Save_Name = os.path.join(os.getcwd(),'Model', name_final)
+    ## Callback
+    class TQDMProgressBar(Callback):
+        def on_train_begin(self, logs=None):
+            self.epochs_pbar = tqdm(total=self.params['epochs'], desc='Training Progress', position=0, leave=True)
+        def on_epoch_end(self, epoch, logs=None):
+            self.epochs_pbar.update(1)
+        def on_train_end(self, logs=None):
+            self.epochs_pbar.close()
+    CALLBACK = [EarlyStopping(monitor=MONITOR, mode=MONITOR_MODE, 
+                              patience=EARLYSTOP_PATIENT, verbose=0),
+                TQDMProgressBar(),
+                ModelCheckpoint(monitor=MONITOR, mode=MONITOR_MODE, save_best_only=True, filepath=Model_Save_Name)]
+    ## 가중치
+    if WEIGHT_METHOD != None:
+        if WEIGHT_METHOD == 'class':
+            CLASS_WEIGHT = class_weight.compute_class_weight('balanced', classes=np.unique(Y_train), y=Y_train.values.flatten())
+            CLASS_WEIGHT = dict(zip(np.unique(Y_train), CLASS_WEIGHT))
+            SAMPLE_WEIGHT = None
+        elif WEIGHT_METHOD == 'sample':
+            CLASS_WEIGHT = None
+            SAMPLE_WEIGHT = class_weight.compute_sample_weight('balanced', Y_train)
+    else:
+        CLASS_WEIGHT, SAMPLE_WEIGHT = None, None
+    ## 학습
+    if VALIDATION_SPLIT != None:
+        model_fit = model.fit(X_train, Y_train.astype('float'),
+                              class_weight=CLASS_WEIGHT,
+                              sample_weight=SAMPLE_WEIGHT,
+                              validation_split=VALIDATION_SPLIT,
+                              batch_size=BATCH_SIZE, epochs=EPOCHS, verbose=VERBOSE,
+                              callbacks=CALLBACK)
+    elif VALIDATION_DATA != None:
+        model_fit = model.fit(X_train, Y_train.astype('float'), 
+                              class_weight=CLASS_WEIGHT,
+                              sample_weight=SAMPLE_WEIGHT,
+                              validation_data=VALIDATION_DATA,
+                              batch_size=BATCH_SIZE, epochs=EPOCHS, verbose=VERBOSE,
+                              callbacks=CALLBACK)
+    else:
+        model_fit = model.fit(X_train, Y_train.astype('float'), 
+                              class_weight=CLASS_WEIGHT,
+                              sample_weight=SAMPLE_WEIGHT,
+                              batch_size=BATCH_SIZE, epochs=EPOCHS, verbose=VERBOSE,
+                              callbacks=CALLBACK)
+   
+    # 설명력
+    if shap:
+        if X_colname == None: X_colname = ['F'+str(i+1) for i in range(X_train.shape[1])]
+        explanation_SHAP(model, X_train, X_test, 
+                         X_colname, Y_max=Y_train.values.max(),
+                         max_display=X_top_display, model_type='Deep')
+        
+    # Learning History Plot
+    if LEARNING_PLOT:
+        HISTORY_METRICS = list(set([metric.split('val_')[-1] for metric in model_fit.history.keys()]))
+        plt.figure(figsize=(12,8))
+        for n, metric in enumerate(HISTORY_METRICS):
+            plt.subplot(2, 2, n+1)
+            plt.tight_layout()
+            plt.plot(range(1,EPOCHS+1), 
+                     model_fit.history[metric], label='Train')
+            plt.plot(range(1,EPOCHS+1), 
+                     model_fit.history['val_'+metric], linestyle='--', label='Validate')
+            plt.xlabel('Epoch')
+            plt.ylabel(metric.capitalize())
+            plt.legend(loc='best', shadow=True, fontsize=12)
+        plt.show()
+    
+    return model, Model_Save_Name
 
 
 ### Date and Author: 20240301, Kyungwon Kim ###
