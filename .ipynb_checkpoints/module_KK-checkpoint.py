@@ -577,10 +577,7 @@ def learning(model, X_train, X_test, Y_train,
     import os
     from datetime import datetime
     ## 모델저장 변수명
-    if len(Y_train.unique()) < 10:
-        name_final = 'DL_Class_'+''.join(str(datetime.now()).split(' ')[0].split('-'))+'_'+''.join(str(datetime.now()).split(' ')[1][:-7].split(':'))+'.keras'
-    else:
-        name_final = 'DL_Reg_'+''.join(str(datetime.now()).split(' ')[0].split('-'))+'_'+''.join(str(datetime.now()).split(' ')[1][:-7].split(':'))+'.keras'
+    name_final = 'DL_'+''.join(str(datetime.now()).split(' ')[0].split('-'))+'_'+''.join(str(datetime.now()).split(' ')[1][:-7].split(':'))+'.keras'
     Model_Save_Name = os.path.join(os.getcwd(),'Model', name_final)
     ## Callback
     class TQDMProgressBar(Callback):
