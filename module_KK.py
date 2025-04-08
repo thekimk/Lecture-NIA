@@ -468,186 +468,51 @@ def reshape_X2Dto3D(X_train, X_test):
     return X_tr_reshape, X_te_reshape
 
 
-### Date and Author: 20230802, Kyungwon Kim ###
-### MLP
-def modeling_MLP(X_train, Y_train, 
-                 node_MLP=[256, 128, 64, 32, 10],
-                 HIDDEN_ACTIVATION='relu', OUTPUT_ACTIVATION='sigmoid',
-                 REGULARIZER=None, DROPOUT_RATIO=0.2, MODEL_SUMMARY=True,
-                 LOSS='binary_crossentropy', OPTIMIZER=None, LEARNING_RATE=0.001):
-    # 네트워크 생성
-    inputs = Input(shape=(X_train.shape[1],))
-    hiddens = Dense(node_MLP[0], activation=HIDDEN_ACTIVATION, kernel_regularizer=REGULARIZER)(inputs)
-    hiddens = Dropout(DROPOUT_RATIO)(hiddens)
-    for node in node_MLP[1:]:
-        hiddens = Dense(node, activation=HIDDEN_ACTIVATION, kernel_regularizer=REGULARIZER)(hiddens)
-        hiddens = Dropout(DROPOUT_RATIO)(hiddens)
-    output = Dense(Y_train.shape[1], activation=OUTPUT_ACTIVATION)(hiddens)  
-    model = Model(inputs, output)  
-    if MODEL_SUMMARY:
-        model.summary() 
+### Date and Author: 20230812, Kyungwon Kim ###
+### df highlighting
+def table_highlight(df_target, minmax='max', axis=0, new_index=None):
+    df = df_target.copy()
+    # unique index 회피
+    if len(df.index.unique()) != df.shape[0]:
+        df.reset_index(inplace=True)
 
-    # 데이터 학습기준 설정 
-    ## 메트릭스
-    if LOSS in ['mae', 'mse', 'mape']:
-        METRICS = [keras.metrics.RootMeanSquaredError(name='RMSE'), 
-                   keras.metrics.MeanSquaredLogarithmicError(name='MSLE'), 
-                   keras.metrics.MeanAbsolutePercentageError(name='MAPE')]
-    if LOSS in ['binary_crossentropy', 'categorical_crossentropy', 'sparse_categorical_crossentropy']:
-        METRICS = [keras.metrics.F1Score(name='F1-score'), 
-                   keras.metrics.Accuracy(name='Accuracy'), 
-                   keras.metrics.AUC(name='AUC')]
-    ## 옵티마이저
-    if OPTIMIZER == None:
-        OPTIMIZER = Adam(learning_rate=LEARNING_RATE)
+    # index 입력
+    if new_index != None:
+        df.index = new_index
+
+    # highlight
+    if minmax == 'max':
+        return df.style.highlight_max(axis=axis)
     else:
-        OPTIMIZER = OPTIMIZER
-    ## 설정
-    model.compile(loss=LOSS, optimizer=OPTIMIZER, metrics=METRICS)
-    
-    return model
+        return df.style.highlight_min(axis=axis)
 
 
 ### Date and Author: 20230802, Kyungwon Kim ###
-### CNN1D
-def modeling_CNN1D(X_train, Y_train, 
-                   node_CNN1=[128, 256, 128], node_CNN2=[64, 32, 10],
-                   HIDDEN_ACTIVATION='relu', OUTPUT_ACTIVATION='sigmoid',
-                   KERNEL_SIZE=5, STRIDE=1, PADDING='same',
-                   POOL_SIZE=2, POOL_STRIDE=2,
-                   REGULARIZER=None, DROPOUT_RATIO=0.2, MODEL_SUMMARY=True,
-                   LOSS='binary_crossentropy', OPTIMIZER=None, LEARNING_RATE=0.001):
-    # 네트워크 생성
-    inputs = Input(shape=(X_train.shape[1], X_train.shape[2]))    
-    hiddens = Conv1D(node_CNN1[0], kernel_size=KERNEL_SIZE, strides=STRIDE, padding=PADDING, 
-                     activation=HIDDEN_ACTIVATION)(inputs)
-    hiddens = MaxPooling1D(pool_size=POOL_SIZE, strides=POOL_STRIDE)(hiddens)
-    hiddens = Dropout(DROPOUT_RATIO)(hiddens)
-    for node in node_CNN1[1:]:
-        hiddens = Conv1D(node, kernel_size=KERNEL_SIZE, strides=STRIDE, padding=PADDING, 
-                         activation=HIDDEN_ACTIVATION)(hiddens)
-        hiddens = MaxPooling1D(pool_size=POOL_SIZE, strides=POOL_STRIDE)(hiddens)
-        hiddens = Dropout(DROPOUT_RATIO)(hiddens)
-        
-    hiddens = Flatten()(hiddens)
-    for node in node_CNN2:
-        hiddens = Dense(node, activation=HIDDEN_ACTIVATION)(hiddens)  
-        hiddens = Dropout(DROPOUT_RATIO)(hiddens)
-    output = Dense(Y_train.shape[1], activation=OUTPUT_ACTIVATION)(hiddens)  
-    model = Model(inputs, output)  
-    if MODEL_SUMMARY:
-        model.summary() 
-
-    # 데이터 학습기준 설정
-    ## 메트릭스
-    if LOSS in ['mae', 'mse', 'mape']:
-        METRICS = [keras.metrics.RootMeanSquaredError(name='RMSE'), 
-                   keras.metrics.MeanSquaredLogarithmicError(name='MSLE'), 
-                   keras.metrics.MeanAbsolutePercentageError(name='MAPE')]
-    if LOSS in ['binary_crossentropy', 'categorical_crossentropy', 'sparse_categorical_crossentropy']:
-        METRICS = [keras.metrics.F1Score(name='F1-score'), 
-                   keras.metrics.Accuracy(name='Accuracy'), 
-                   keras.metrics.AUC(name='AUC')]
-    ## 옵티마이저
-    if OPTIMIZER == None:
-        OPTIMIZER = Adam(learning_rate=LEARNING_RATE)
+### Concat Prediction Scores for Target Algorithms
+def prediction_summary(folder_location, algonames=None, highlight_direct='max', save_name='Performance.csv'):
+    if algonames == None:
+        print('Please Select the Algorithm Names... for Cancatenating Results!')
     else:
-        OPTIMIZER = OPTIMIZER
-    ## 설정
-    model.compile(loss=LOSS, optimizer=OPTIMIZER, metrics=METRICS)
-    
-    return model
+        # 성능측정 파일들
+        files = [i for i in os.listdir(folder_location) if i.startswith('Performance_')]
 
+        # 원하는 알고리즘에 맞게 데이터 로딩 및 결합
+        scores_te, scores_trte = pd.DataFrame(), pd.DataFrame()
+        for algo in algonames:
+            for file in files:
+                if algo == file.split('_')[1].split('.')[0]:
+                    score = pd.read_csv(os.path.join(folder_location, file))
+                    scores_te = pd.concat([scores_te, score.iloc[[0],:]], axis=0)
+                    scores_trte = pd.concat([scores_trte, score.iloc[[1],:]], axis=0)
 
-### Date and Author: 20250103, Kyungwon Kim ###
-### Learning Model for Classification
-def learning(model, X_train, X_test, Y_train, 
-             WEIGHT_METHOD=None,
-             VALIDATION_SPLIT=0.2, VALIDATION_DATA=None, 
-             BATCH_SIZE=64, EPOCHS=50, VERBOSE=0,
-             MONITOR='val_accuracy', MONITOR_MODE='max', EARLYSTOP_PATIENT=None,
-             LEARNING_PLOT=True, shap=False, X_top_display=None, X_colname=None):
-    # 세팅
-    if VALIDATION_DATA != None:
-        VALIDATION_SPLIT = 0.2
-    if EARLYSTOP_PATIENT == None:
-        EARLYSTOP_PATIENT = int(EPOCHS * 0.1)
-        
-    # 학습하기
-    import os
-    from datetime import datetime
-    ## 모델저장 변수명
-    name_final = 'DL_'+''.join(str(datetime.now()).split(' ')[0].split('-'))+'_'+''.join(str(datetime.now()).split(' ')[1][:-7].split(':'))+'.keras'
-    Model_Save_Name = os.path.join(os.getcwd(),'Model', name_final)
-    ## Callback
-    class TQDMProgressBar(Callback):
-        def on_train_begin(self, logs=None):
-            self.epochs_pbar = tqdm(total=self.params['epochs'], desc='Training Progress', position=0, leave=True)
-        def on_epoch_end(self, epoch, logs=None):
-            self.epochs_pbar.update(1)
-        def on_train_end(self, logs=None):
-            self.epochs_pbar.close()
-    CALLBACK = [EarlyStopping(monitor=MONITOR, mode=MONITOR_MODE, 
-                              patience=EARLYSTOP_PATIENT, verbose=0),
-                TQDMProgressBar(),
-                ModelCheckpoint(monitor=MONITOR, mode=MONITOR_MODE, save_best_only=True, filepath=Model_Save_Name)]
-    ## 가중치
-    if WEIGHT_METHOD != None:
-        if WEIGHT_METHOD == 'class':
-            CLASS_WEIGHT = class_weight.compute_class_weight('balanced', classes=np.unique(Y_train), y=Y_train.values.flatten())
-            CLASS_WEIGHT = dict(zip(np.unique(Y_train), CLASS_WEIGHT))
-            SAMPLE_WEIGHT = None
-        elif WEIGHT_METHOD == 'sample':
-            CLASS_WEIGHT = None
-            SAMPLE_WEIGHT = class_weight.compute_sample_weight('balanced', Y_train)
-    else:
-        CLASS_WEIGHT, SAMPLE_WEIGHT = None, None
-    ## 학습
-    if VALIDATION_SPLIT != None:
-        model_fit = model.fit(X_train, Y_train.astype('float'),
-                              class_weight=CLASS_WEIGHT,
-                              sample_weight=SAMPLE_WEIGHT,
-                              validation_split=VALIDATION_SPLIT,
-                              batch_size=BATCH_SIZE, epochs=EPOCHS, verbose=VERBOSE,
-                              callbacks=CALLBACK)
-    elif VALIDATION_DATA != None:
-        model_fit = model.fit(X_train, Y_train.astype('float'), 
-                              class_weight=CLASS_WEIGHT,
-                              sample_weight=SAMPLE_WEIGHT,
-                              validation_data=VALIDATION_DATA,
-                              batch_size=BATCH_SIZE, epochs=EPOCHS, verbose=VERBOSE,
-                              callbacks=CALLBACK)
-    else:
-        model_fit = model.fit(X_train, Y_train.astype('float'), 
-                              class_weight=CLASS_WEIGHT,
-                              sample_weight=SAMPLE_WEIGHT,
-                              batch_size=BATCH_SIZE, epochs=EPOCHS, verbose=VERBOSE,
-                              callbacks=CALLBACK)
-   
-    # 설명력
-    if shap:
-        if X_colname == None: X_colname = ['F'+str(i+1) for i in range(X_train.shape[1])]
-        explanation_SHAP(model, X_train, X_test, 
-                         X_colname, Y_max=Y_train.values.max(),
-                         max_display=X_top_display, model_type='Deep')
-        
-    # Learning History Plot
-    if LEARNING_PLOT:
-        HISTORY_METRICS = list(set([metric.split('val_')[-1] for metric in model_fit.history.keys()]))
-        plt.figure(figsize=(12,8))
-        for n, metric in enumerate(HISTORY_METRICS):
-            plt.subplot(2, 2, n+1)
-            plt.tight_layout()
-            plt.plot(range(1,EPOCHS+1), 
-                     model_fit.history[metric], label='Train')
-            plt.plot(range(1,EPOCHS+1), 
-                     model_fit.history['val_'+metric], linestyle='--', label='Validate')
-            plt.xlabel('Epoch')
-            plt.ylabel(metric.capitalize())
-            plt.legend(loc='best', shadow=True, fontsize=12)
-        plt.show()
-    
-    return model, Model_Save_Name
+    # 정리
+    scores_te = scores_te[[scores_te.columns[1], scores_te.columns[0]]+list(scores_te.columns[2:])]
+    scores_trte = scores_trte[[scores_trte.columns[1], scores_trte.columns[0]]+list(scores_trte.columns[2:])]
+    display(table_highlight(scores_te, minmax=highlight_direct),
+            table_highlight(scores_trte, minmax=highlight_direct))
+    scores = pd.concat([scores_te, scores_trte], axis=0)
+    save_name = os.path.join(os.getcwd(),'Result',save_name)
+    scores.to_csv(save_name, index=False, encoding='utf-8-sig')
 
 
 ### Date and Author: 20240301, Kyungwon Kim ###
