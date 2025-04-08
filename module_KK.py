@@ -58,7 +58,7 @@ from keras.layers import Conv3D, Convolution3D, MaxPooling3D, AveragePooling3D, 
 # from keras.layers import TimeDistributed, CuDDN, CuDNNLSTM
 from tensorflow.keras.utils import plot_model
 from tensorflow.keras.callbacks import Callback, EarlyStopping, ModelCheckpoint
-from tensorflow.keras.optimizers import SGD, Adam
+from keras.optimizers import SGD, Adam
 from keras_tqdm import tqdm_callback, TQDMNotebookCallback
 import keras.backend as K
 
@@ -392,6 +392,7 @@ def explanation_SHAP_KK(model, X_train, X_test, X_colname,
     # 개별 설명 (샘플 1000) for Train
     shap_sample_train = shap_values_train.sample(sample_size_1000)
     print("Train Sample 1000 Explanation:")
+    shap.initjs()
     display(shap.force_plot(base_value=shap_sample_train.base_values,
                             shap_values=shap_sample_train.values,
                             features=shap_sample_train.data,
@@ -401,6 +402,7 @@ def explanation_SHAP_KK(model, X_train, X_test, X_colname,
     # 개별 설명 (샘플 1000) for Test
     shap_sample_test = shap_values_test.sample(sample_size_1000)
     print("Test Sample 1000 Explanation:")
+    shap.initjs()
     display(shap.force_plot(base_value=shap_sample_test.base_values,
                             shap_values=shap_sample_test.values,
                             features=shap_sample_test.data,
