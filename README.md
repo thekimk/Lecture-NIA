@@ -25,8 +25,10 @@
 
     > - 미래에는 이러한 특성을 가진 고객들을 타겟으로 하면 됨 (Test Explanation)
     > <p float="left">
-    >   <img src="https://github.com/user-attachments/assets/807b9ec8-85f0-4e91-9b2b-8441cd24e5cd" width="500" style="margin-right: 10px;" />
-    >   <img src="https://github.com/user-attachments/assets/1b311067-3d17-48c2-8466-c71cd34b039d" width="400" />
+    >   <img src="https://github.com/user-attachments/assets/1b311067-3d17-48c2-8466-c71cd34b039d" width="600" />
+    > </p>
+    > <p float="left">
+    >   <img src="https://github.com/user-attachments/assets/807b9ec8-85f0-4e91-9b2b-8441cd24e5cd" width="600" style="margin-right: 10px;" />
     > </p>
 
 
