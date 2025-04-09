@@ -27,8 +27,8 @@
     > <p float="left">
     >   <img src="https://github.com/user-attachments/assets/807b9ec8-85f0-4e91-9b2b-8441cd24e5cd" width="600" style="margin-right: 10px;" />
     > </p>
-    >
-    > | **Positive Effect** |  | **Negative Effect** |  |
+
+| **Positive Effect** |  | **Negative Effect** |  |
 |:---:|:---:|:---:|:---:|
 | **Train (Past)** | **Test (Future)** | **Train (Past)** | **Test (Future)** |
 | 향후기부의사여부 | 향후기부의사여부 | 분류코드_가구소득1코드 | 분류코드_가구소득1코드 |
