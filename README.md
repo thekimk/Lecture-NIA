@@ -25,10 +25,10 @@
 
     > - 미래에는 이러한 특성을 가진 고객들을 타겟으로 하면 됨 (Test Explanation)
     > <p float="left">
-    >   <img src="https://github.com/user-attachments/assets/1b311067-3d17-48c2-8466-c71cd34b039d" width="600" />
+    >   <img src="https://github.com/user-attachments/assets/1b311067-3d17-48c2-8466-c71cd34b039" width="600" />
     > </p>
     > <p float="left">
-    >   <img src="https://github.com/user-attachments/assets/5e86dcd9-892a-4484-8b56-8d21d47684a2" width="600" style="margin-right: 10px;" />
+    >   <img src="https://github.com/user-attachments/assets/1bdb99f9-5fc4-4af5-a722-48fe038df554" width="600" style="margin-right: 10px;" />
     > </p>
 
 
@@ -37,6 +37,10 @@
   (3) **미래 잠재고객 확보전략:** 어떤 고객들을 유입하게 할 것인가?
 
     > - 고객들의 실시간 마케팅 성공확률을 확인하며 타겟 후보군으로 설정 (Individual Test Explanation)
+    > <p float="left">
+    >   <img src="https://github.com/user-attachments/assets/81def3ea-cae4-4527-a057-194ffd27a27c" width="400" style="margin-right: 10px;" />
+    >   <img src="https://github.com/user-attachments/assets/5d9ba8a3-55ac-46a9-a1f6-2dd379e1f391" width="400" />
+    > </p>
     > <p float="left">
     >   <img src="https://github.com/user-attachments/assets/81def3ea-cae4-4527-a057-194ffd27a27c" width="400" style="margin-right: 10px;" />
     >   <img src="https://github.com/user-attachments/assets/5d9ba8a3-55ac-46a9-a1f6-2dd379e1f391" width="400" />
