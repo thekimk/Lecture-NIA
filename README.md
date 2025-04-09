@@ -25,7 +25,7 @@
 
     > - 미래에는 이러한 특성을 가진 고객들을 타겟으로 하면 됨 (Test Explanation)
     > <p float="left">
-    >   <img src="https://github.com/user-attachments/assets/807b9ec8-85f0-4e91-9b2b-8441cd24e5cd" width="400" style="margin-right: 10px;" />
+    >   <img src="https://github.com/user-attachments/assets/807b9ec8-85f0-4e91-9b2b-8441cd24e5cd" width="600" style="margin-right: 10px;" />
     > </p>
 
   (2) **미래 비즈니스 성과:** 데이터를 근거로 타겟 마케팅시 실제 기부를 할 확률은 얼마인가?
