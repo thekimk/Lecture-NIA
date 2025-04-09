@@ -28,7 +28,7 @@
     >   <img src="https://github.com/user-attachments/assets/1b311067-3d17-48c2-8466-c71cd34b039d" width="600" />
     > </p>
     > <p float="left">
-    >   <img src="https://github.com/user-attachments/assets/807b9ec8-85f0-4e91-9b2b-8441cd24e5cd" width="600" style="margin-right: 10px;" />
+    >   <img src="https://github.com/user-attachments/assets/5e86dcd9-892a-4484-8b56-8d21d47684a2" width="600" style="margin-right: 10px;" />
     > </p>
 
 
