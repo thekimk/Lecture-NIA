@@ -23,12 +23,18 @@
 
   (1) **현재 타겟 마케팅 전략:** 누구에게 마케팅을 하여 기부를 유도할 것인가?
 
-    > 미래에는 이러한 특성을 가진 고객들을 타겟으로 하면 됨 (Text Explanation)
+    > - 미래에는 이러한 특성을 가진 고객들을 타겟으로 하면 됨 (Test Explanation)
     > ![Image](https://github.com/user-attachments/assets/807b9ec8-85f0-4e91-9b2b-8441cd24e5cd)
 
   (2) **미래 비즈니스 성과:** 데이터를 근거로 타겟 마케팅시 실제 기부를 할 확률은 얼마인가?
 
-  (3) **미래 잠재고객 확보전략:** 어떤 고객들을 유입하게 할 것인가? 
+  (3) **미래 잠재고객 확보전략:** 어떤 고객들을 유입하게 할 것인가?
+
+    > - 고객들의 실시간 마케팅 성공확률을 확인하며 타겟 후보군으로 설정 (Individual Test Explanation)
+    > <p float="left">
+  <img src="[이미지1_URL](https://github.com/user-attachments/assets/81def3ea-cae4-4527-a057-194ffd27a27c)" width="300" style="margin-right: 10px;" />
+  <img src="[이미지2_URL](https://github.com/user-attachments/assets/5d9ba8a3-55ac-46a9-a1f6-2dd379e1f391)" width="300" />
+</p>
 
 
 ---
