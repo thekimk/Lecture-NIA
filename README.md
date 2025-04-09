@@ -47,8 +47,8 @@
     > - 고객들의 실시간 마케팅 성공확률을 확인하며 타겟 후보군으로 설정 (Individual Test Explanation)
     >   
     > <p float="left">
-    >   <img src="https://github.com/user-attachments/assets/c3ebea19-8dd0-4867-b3ba-72517735da75" width="400" style="margin-right: 10px;" />
-    >   <img src="https://github.com/user-attachments/assets/a326283f-6025-4674-b1eb-6c5e566a7770" width="400" />
+    >   <img src="https://github.com/user-attachments/assets/a326283f-6025-4674-b1eb-6c5e566a7770" width="400" style="margin-right: 10px;" />
+    >   <img src="https://github.com/user-attachments/assets/c3ebea19-8dd0-4867-b3ba-72517735da75" width="400" />
     > </p>
     > <p float="left">
     >   <img src="https://github.com/user-attachments/assets/f8031383-25c2-4dec-8977-b61cca327f96" width="400" style="margin-right: 10px;" />
