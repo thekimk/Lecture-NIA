@@ -15,6 +15,15 @@
 
 - **강의링크**: [[2025년 4월] 데이터 • AI 활용 역량강화과정](https://kbig.kr/portal/kbig/educationalPracticeContent/edu_seminar?bltnNo=11742800453295)
   
-![Image](https://github.com/user-attachments/assets/2419004c-a58b-45af-a589-50ad9e6f9841)
+# ![Image](https://github.com/user-attachments/assets/2419004c-a58b-45af-a589-50ad9e6f9841)
+
+- **Business Analytics1:** 누구에게 마케팅을 해야할 것인가? 설명가능한 인공지능을 활용한 추천과 근거
+
+(1) **현재 타겟 마케팅 전략:** 누구에게 마케팅을 하여 기부를 유도할 것인가?
+
+(2) **미래 비즈니스 성과:** 데이터를 근거로 타겟 마케팅시 실제 기부를 할 확률은 얼마인가?
+
+(3) **미래 잠재고객 확보전략:** 어떤 고객들을 유입하게 할 것인가? 
+
 
 ---
