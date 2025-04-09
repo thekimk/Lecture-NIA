@@ -470,34 +470,40 @@ def reshape_X2Dto3D(X_train, X_test):
     return X_tr_reshape, X_te_reshape
 
 
-### Date and Author: 20230812, Kyungwon Kim ###
+### Date and Author: 20250409, Kyungwon Kim ###
 ### df highlighting
-def table_highlight(df_target, minmax='max', axis=0, new_index=None):
-    df = df_target.copy()
-    # unique index 회피
-    if len(df.index.unique()) != df.shape[0]:
-        df.reset_index(inplace=True)
+def table_highlight(df_target, colidx=[], axis=0, minmax='max'):
+    # 하위 함수 정의
+    def highlight_max_red_bold(x):
+        return ['font-weight: bold; background-color: red' if i == x.max() else '' for i in x]
+    def highlight_min_red_bold(x):
+        return ['font-weight: bold; background-color: red' if i == x.min() else '' for i in x]
 
-    # index 입력
-    if new_index != None:
-        df.index = new_index
-
-    # highlight
-    if minmax == 'max':
-        return df.style.highlight_max(axis=axis)
+    # 대상 colname 선택
+    if colidx == []:
+        colname = list(df_target.columns)
     else:
-        return df.style.highlight_min(axis=axis)
+        colname = [list(df_target.columns)[i] for i in colidx if i < len(list(df_target.columns))]
+
+    # 스타일 적용
+    if minmax == 'max':
+        df_styled = df_target.style.apply(highlight_max_red_bold, subset=colname, axis=axis)
+    elif minmax == 'min':
+        df_styled = df_target.style.apply(highlight_min_red_bold, subset=colname, axis=axis)
+
+    return df_styled
 
 
 ### Date and Author: 20230802, Kyungwon Kim ###
 ### Concat Prediction Scores for Target Algorithms
-def prediction_summary(folder_location, algonames=None, highlight_direct='max', save_name='Performance.csv'):
+def prediction_summary(folder_location, algonames=None, 
+                       colidx=[], axis=0, highlight_direct='max', save_name='Performance.csv'):
     if algonames == None:
         print('Please Select the Algorithm Names... for Cancatenating Results!')
     else:
         # 성능측정 파일들
         files = [i for i in os.listdir(folder_location) if i.startswith('Performance_')]
-
+        
         # 원하는 알고리즘에 맞게 데이터 로딩 및 결합
         scores_te, scores_trte = pd.DataFrame(), pd.DataFrame()
         for algo in algonames:
@@ -506,15 +512,15 @@ def prediction_summary(folder_location, algonames=None, highlight_direct='max', 
                     score = pd.read_csv(os.path.join(folder_location, file))
                     scores_te = pd.concat([scores_te, score.iloc[[0],:]], axis=0)
                     scores_trte = pd.concat([scores_trte, score.iloc[[1],:]], axis=0)
-
+        
     # 정리
-    scores_te = scores_te[[scores_te.columns[1], scores_te.columns[0]]+list(scores_te.columns[2:])]
-    scores_trte = scores_trte[[scores_trte.columns[1], scores_trte.columns[0]]+list(scores_trte.columns[2:])]
-    display(table_highlight(scores_te, minmax=highlight_direct),
-            table_highlight(scores_trte, minmax=highlight_direct))
+    scores_te = scores_te[[scores_te.columns[1], scores_te.columns[0]]+list(scores_te.columns[2:])].reset_index().iloc[:,1:]
+    scores_trte = scores_trte[[scores_trte.columns[1], scores_trte.columns[0]]+list(scores_trte.columns[2:])].reset_index().iloc[:,1:]
+    display(table_highlight(scores_te, colidx=colidx, axis=axis, minmax=highlight_direct), 
+            table_highlight(scores_trte, colidx=colidx, axis=axis, minmax=highlight_direct))
     scores = pd.concat([scores_te, scores_trte], axis=0)
     save_name = os.path.join(os.getcwd(),'Result',save_name)
-    scores.to_csv(save_name, index=False, encoding='utf-8-sig')
+    scores.to_csv(save_name, index=False, encoding='utf-8-sig')    
 
 
 ### Date and Author: 20240301, Kyungwon Kim ###
