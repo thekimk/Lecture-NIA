@@ -25,7 +25,7 @@
 
     > - 미래에는 이러한 특성을 가진 고객들을 타겟으로 하면 됨 (Test Explanation)
     > <p float="left">
-    >   <img src="https://github.com/user-attachments/assets/1b311067-3d17-48c2-8466-c71cd34b039" width="600" />
+    >   <img src="https://github.com/user-attachments/assets/1d3932a6-e036-4c87-998a-cfe947a4838c" width="600" />
     > </p>
     > <p float="left">
     >   <img src="https://github.com/user-attachments/assets/1bdb99f9-5fc4-4af5-a722-48fe038df554" width="600" style="margin-right: 10px;" />
@@ -38,12 +38,12 @@
 
     > - 고객들의 실시간 마케팅 성공확률을 확인하며 타겟 후보군으로 설정 (Individual Test Explanation)
     > <p float="left">
-    >   <img src="https://github.com/user-attachments/assets/81def3ea-cae4-4527-a057-194ffd27a27c" width="400" style="margin-right: 10px;" />
-    >   <img src="https://github.com/user-attachments/assets/5d9ba8a3-55ac-46a9-a1f6-2dd379e1f391" width="400" />
+    >   <img src="https://github.com/user-attachments/assets/9d176183-534c-46dd-bd1e-2c7408ce3085" width="400" style="margin-right: 10px;" />
+    >   <img src="https://github.com/user-attachments/assets/59d47824-ec38-4770-ab9f-ca506b974e6d" width="400" />
     > </p>
     > <p float="left">
-    >   <img src="https://github.com/user-attachments/assets/81def3ea-cae4-4527-a057-194ffd27a27c" width="400" style="margin-right: 10px;" />
-    >   <img src="https://github.com/user-attachments/assets/5d9ba8a3-55ac-46a9-a1f6-2dd379e1f391" width="400" />
+    >   <img src="https://github.com/user-attachments/assets/f8031383-25c2-4dec-8977-b61cca327f96" width="400" style="margin-right: 10px;" />
+    >   <img src="https://github.com/user-attachments/assets/e0eaf408-5973-440e-b508-20b5160150e9" width="400" />
     > </p>
 
 
