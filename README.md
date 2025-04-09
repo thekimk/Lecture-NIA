@@ -24,6 +24,7 @@
   (1) **현재 타겟 마케팅 전략:** 누구에게 마케팅을 하여 기부를 유도할 것인가?
 
     > - 미래에는 이러한 특성을 가진 고객들을 타겟으로 하면 됨 (Test Explanation)
+    >   
     > <p float="left">
     >   <img src="https://github.com/user-attachments/assets/6dc7c03c-08d4-4a82-88ea-c92d1371ddd5" width="600" />
     > </p>
@@ -36,6 +37,7 @@
 
     > - 기존 및 미래 잠재 고객을 포함하여 타겟 마케팅 진행시 100명 중 96명 이상 성공 가능!
     > - 미래 잠재 고객만을 대상으로 타겟 마케팅 진행시 100명 중 81명 이상 성공 가능!
+    >   
     > <p float="left">
     >   <img src="https://github.com/user-attachments/assets/8f6fe204-6493-403e-aecf-70f3f5ba7b8d" width="800" style="margin-right: 10px;" />
     > </p>
@@ -43,6 +45,7 @@
   (3) **미래 잠재고객 확보전략:** 어떤 고객들을 유입하게 할 것인가?
 
     > - 고객들의 실시간 마케팅 성공확률을 확인하며 타겟 후보군으로 설정 (Individual Test Explanation)
+    >   
     > <p float="left">
     >   <img src="https://github.com/user-attachments/assets/9d176183-534c-46dd-bd1e-2c7408ce3085" width="400" style="margin-right: 10px;" />
     >   <img src="https://github.com/user-attachments/assets/59d47824-ec38-4770-ab9f-ca506b974e6d" width="400" />
