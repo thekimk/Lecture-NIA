@@ -24,24 +24,24 @@ import random
 import matplotlib
 import matplotlib.font_manager as fm
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
+from matplotlib.ticker import FuncFormatter
 import seaborn as sns
 import plotly.express as px
 
 from sklearn.utils import class_weight
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
-from lightgbm import LGBMClassifier
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from xgboost import XGBRegressor, XGBClassifier
+from lightgbm import LGBMRegressor, LGBMClassifier
 from xgboost import plot_importance as plot_importance_xgb
 from lightgbm import plot_importance as plot_importance_lgbm
-from catboost import CatBoostClassifier
+from catboost import CatBoostRegressor, CatBoostClassifier
+from mlxtend.regressor import StackingRegressor, StackingCVRegressor
 from mlxtend.classifier import StackingClassifier, StackingCVClassifier
 import shap
-
-from sklearn import metrics
-from sklearn.metrics import confusion_matrix, classification_report
-from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
-from sklearn.metrics import roc_curve, auc, precision_recall_curve
+from mlforecast import MLForecast
+from mlforecast.utils import PredictionIntervals
 
 import tensorflow as tf
 tf.get_logger().setLevel('ERROR')
@@ -61,6 +61,16 @@ from tensorflow.keras.callbacks import Callback, EarlyStopping, ModelCheckpoint
 from keras.optimizers import SGD, Adam
 from keras_tqdm import tqdm_callback, TQDMNotebookCallback
 import keras.backend as K
+from neuralforecast import NeuralForecast
+from neuralforecast.models import MLP, NBEATS, NHITS, NBEATSx, TiDE
+from neuralforecast.models import RNN, LSTM, GRU, DilatedRNN, TCN
+
+from sklearn import metrics
+from sklearn.metrics import r2_score, mean_squared_error,  mean_absolute_error, mean_absolute_percentage_error
+from sktime.performance_metrics.forecasting import mean_squared_percentage_error, median_absolute_percentage_error, mean_relative_absolute_error, median_relative_absolute_error
+from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
+from sklearn.metrics import roc_curve, auc, precision_recall_curve
 
 # Text
 import re
@@ -640,7 +650,7 @@ def text_preprocessor(text, language='korean', del_number=False, del_bracket_con
 
 ### Date and Author: 20240531, Kyungwon Kim ###
 ### input change by nixtra package
-def convert_df2nixdf(df, Y_colname, X_colname=None, time_colname=None):
+def preprocessing_df2Nixtra(df, Y_colname, X_colname=None, time_colname=None):
     # nixtla 형태반영
     df_nixtra = pd.DataFrame()
     if time_colname == None:
@@ -649,15 +659,101 @@ def convert_df2nixdf(df, Y_colname, X_colname=None, time_colname=None):
     else:
         df_nixtra['ds'] = df[time_colname].copy()
         df_nixtra['y'] = df[Y_colname].copy()
-                
+
     # ID 설정
     df_nixtra['unique_id'] = 1.0
-    
+
     # 정리
     df_nixtra = df_nixtra[['unique_id', 'ds', 'y']]
-    
+
     # X 반영
     if X_colname != None:
         df_nixtra = pd.concat([df_nixtra, df[X_colname].reset_index().iloc[:,1:]], axis=1)
-    
+
     return df_nixtra
+
+### Date and Author: 20240620, Kyungwon Kim ###
+### Evaluation of each pairs
+def evaluation_reg_Metrics_DF(df_Ypred, ranking_metric=['MAPE']):
+    # 정리
+    df_Ypred = df_Ypred[[col for col in df_Ypred.columns if col.split('-')[-1].isalpha()]]
+    
+    # 평가
+    Scores = pd.DataFrame()
+    for i, col in enumerate(df_Ypred.columns):
+        if col != 'y':
+            # evaluator
+            MSE = metrics.mean_squared_error(df_Ypred.y, df_Ypred[col])
+            RMSE = np.sqrt(metrics.mean_squared_error(df_Ypred.y, df_Ypred[col]))
+            MSPE = mean_squared_percentage_error(df_Ypred.y, df_Ypred[col])
+            MAE = metrics.mean_absolute_error(df_Ypred.y, df_Ypred[col])
+            MAPE = metrics.mean_absolute_percentage_error(df_Ypred.y, df_Ypred[col])
+            MdAE = metrics.median_absolute_error(df_Ypred.y, df_Ypred[col])
+            MdAPE = median_absolute_percentage_error(df_Ypred.y, df_Ypred[col])
+            Score = pd.DataFrame([MSE, RMSE, MSPE, MAE, MAPE, MdAE, MdAPE], 
+                                 index=['MSE', 'RMSE', 'MSPE', 'MAE', 'MAPE', 'MedAE', 'MedAPE'], columns=['Score']).T
+            Scores = pd.concat([Scores, Score], axis=0)
+    Scores.index = df_Ypred.columns[1:]
+    
+    # 정렬
+    if ranking_metric != None:
+        Scores_sum = pd.DataFrame()
+        for metric in ranking_metric:
+            Scores_sum = pd.concat([Scores_sum, Scores[metric]], axis=1)     
+        Scores_ranking = Scores_sum.sum(axis=1).rank().sort_values().index
+        Scores = Scores.loc[Scores_ranking,:]
+    
+    return Scores
+
+### Date and Author: 20240610, Kyungwon Kim ###
+### Prediction plot
+def evaluation_reg_PredPlot_DF(df_Ypred, title='Forecasting', xlabel='Index', ylabel='Y'):
+    ## y 여부에 따른 중앙값만 별도 추출
+    df_Ypred = df_Ypred[[col for col in df_Ypred.columns if col.split('-')[-1].isalpha()]]
+    ## y가 있으면 시각화 추가하고 아니면 빼고 진행
+    plt.figure(figsize=(18,6))
+    if df_Ypred.columns.str.contains('y').sum() != 0:
+        plt.plot(df_Ypred.index, df_Ypred['y'], linewidth=3)
+    for col in df_Ypred.columns:
+        if col != 'y':
+            plt.plot(df_Ypred.index, df_Ypred[col], linestyle='--', linewidth=3)
+    plt.ticklabel_format(axis='y', style='plain') 
+    plt.title(title, fontsize=20)
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
+    plt.xlabel(xlabel, fontsize=20)
+    plt.ylabel(ylabel, fontsize=20)
+    plt.legend([col if col != 'y' else 'True' for col in df_Ypred.columns], fontsize=16, loc='best')
+    ## 쉼표 포멧 적용
+    plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True, prune='lower'))  # 정수만 표시
+    plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:,.0f}'))  # 쉼표 추가
+    plt.grid()
+    plt.show()
+
+### Date and Author: 20240619, Kyungwon Kim ###
+### Prediction plot
+def evaluation_time_PredPlot(Y_real, Y_pred, Y_pred_index=False, 
+                             title='Algorithm', xlabel='Sequence', ylabel='Price',
+                             visual_package='plotly', slider=True):
+    # 데이터 정리
+    if Y_pred_index:
+        df_Y = pd.concat([Y_real, Y_pred], axis=1)
+    else:
+        df_Y = pd.concat([Y_real, pd.DataFrame(Y_pred, 
+                                               index=Y_real.index)], axis=1)
+    df_Y.columns = ['Real Value', 'Predicted Value']
+    
+    # 시각화
+    df_Y.plot(kind='line', figsize=(18,6), linewidth=3, fontsize=20,
+              xlim=(df_Y.index.min(),df_Y.index.max()))
+    plt.ticklabel_format(axis='y', style='plain') 
+    plt.title(title, fontsize=20)
+    plt.xlabel(xlabel, fontsize=20)
+    plt.ylabel(ylabel, fontsize=20)
+    plt.legend(fontsize=16)
+    ## 쉼표 포멧 적용
+    plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True, prune='lower'))  # 정수만 표시
+    plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:,.0f}'))  # 쉼표 추가
+    plt.grid()
+    plt.show()
+
