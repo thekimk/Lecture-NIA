@@ -1,3 +1,4 @@
 Model/
 outputs/
 catboost_info/
+.ipynb_checkpoints/
