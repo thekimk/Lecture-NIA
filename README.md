@@ -87,5 +87,5 @@
     > - 전문가들의 정성적 예측이 대비 훨씬 정교한 정량적 미래 수요예측 성능
     >
     > <p float="left">
-    >   <img src="https://github.com/user-attachments/assets/14664a4c-39d8-499a-9cfe-2a3c37552d1f" width="600" style="margin-right: 10px;" />
+    >   <img src="https://github.com/user-attachments/assets/ef3b36e3-6101-485e-b03a-ed0d000c27ae" width="600" style="margin-right: 10px;" />
     > </p>
