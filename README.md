@@ -90,6 +90,6 @@
     >   <img src="https://github.com/user-attachments/assets/ef3b36e3-6101-485e-b03a-ed0d000c27ae" width="600" style="margin-right: 10px;" />
     > </p>
     > <p float="left">
-    >   <img src="https://github.com/user-attachments/assets/ba4a3078-e46b-4644-a21e-8d49a2bce169" width="400" style="margin-right: 10px;" />
-    >   <img src="https://github.com/user-attachments/assets/2e7e4d86-83e3-448c-b1e0-6657c2faf75a" width="400" />
+    >   <img src="https://github.com/user-attachments/assets/ba4a3078-e46b-4644-a21e-8d49a2bce169" width="350" style="margin-right: 10px;" />
+    >   <img src="https://github.com/user-attachments/assets/2e7e4d86-83e3-448c-b1e0-6657c2faf75a" width="250" />
     > </p>
