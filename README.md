@@ -79,7 +79,7 @@
     > </p>
     >
     > - 수요예측 모델링 성능 검증 및 실제 미래 수요예측 결과
-    >![Image](https://github.com/user-attachments/assets/14664a4c-39d8-499a-9cfe-2a3c37552d1f)
+    >
     > <p float="left">
-    >   <img src="https://github.com/user-attachments/assets/14664a4c-39d8-499a-9cfe-2a3c37552d1f" width="800" style="margin-right: 10px;" />
+    >   <img src="https://github.com/user-attachments/assets/14664a4c-39d8-499a-9cfe-2a3c37552d1f" width="600" style="margin-right: 10px;" />
     > </p>
