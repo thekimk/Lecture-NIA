@@ -72,9 +72,8 @@
 
   (2) **미래 비즈니스 수요예측:** 독립변수가 존재하지 않는 미래의 수요를 예측
 
-    > - 기존 및 미래 잠재 고객을 포함하여 타겟 마케팅 진행시 100명 중 96명 이상 성공 가능!
-    > - 미래 잠재 고객만을 대상으로 타겟 마케팅 진행시 100명 중 81명 이상 성공 가능!
-    >   
+    > - 최신 인공지능 알고리즘을 활용하여 수요 예측
+    >
     > <p float="left">
-    >   <img src="https://github.com/user-attachments/assets/8f6fe204-6493-403e-aecf-70f3f5ba7b8d" width="800" style="margin-right: 10px;" />
+    >   <img src="https://github.com/user-attachments/assets/1bfa35c1-42ab-4c68-8a44-86f32735209e" width="800" style="margin-right: 10px;" />
     > </p>
