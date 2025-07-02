@@ -91,5 +91,5 @@
     > </p>
     > <p float="left">
     >   <img src="https://github.com/user-attachments/assets/ba4a3078-e46b-4644-a21e-8d49a2bce169" width="350" style="margin-right: 10px;" />
-    >   <img src="https://github.com/user-attachments/assets/2e7e4d86-83e3-448c-b1e0-6657c2faf75a" width="250" />
+    >   <img src="https://github.com/user-attachments/assets/2e7e4d86-83e3-448c-b1e0-6657c2faf75a" width="300" />
     > </p>
