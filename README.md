@@ -67,28 +67,14 @@
     >
     > - **경제지표 데이터:** 소비자심리지수(CSI), 소비자물가지수(CPI), 고용율, 실업률, 인구이동 통계, 생활인구 통계, 고속도로 교통량, 국내외 항공 여객수 등
     >
-    > - **뉴스텍스트 데이터:** 수요에 직접적으로 검색가능한 네이버 뉴스 데이터 기반 Buzz량, 텍스트 전처리 및 감성분석 데이터
+    > - **뉴스텍스트 데이터:** 수요에 직접적으로 검색가능한 네이버 뉴스 데이터 기반 Buzz량, 텍스트 전처리 및 Transformer 감성분석 데이터
 
 
-
-  (2) **미래 비즈니스 성과:** 데이터를 근거로 타겟 마케팅시 실제 성공할 확률은 얼마인가?
+  (2) **미래 비즈니스 수요예측:** 독립변수가 존재하지 않는 미래의 수요를 예측
 
     > - 기존 및 미래 잠재 고객을 포함하여 타겟 마케팅 진행시 100명 중 96명 이상 성공 가능!
     > - 미래 잠재 고객만을 대상으로 타겟 마케팅 진행시 100명 중 81명 이상 성공 가능!
     >   
     > <p float="left">
     >   <img src="https://github.com/user-attachments/assets/8f6fe204-6493-403e-aecf-70f3f5ba7b8d" width="800" style="margin-right: 10px;" />
-    > </p>
-
-  (3) **미래 잠재고객 확보전략:** 어떤 고객들을 유입하게 할 것인가?
-
-    > - 고객들의 실시간 마케팅 성공확률을 확인하며 타겟 후보군으로 설정 (Individual Test Explanation)
-    >   
-    > <p float="left">
-    >   <img src="https://github.com/user-attachments/assets/a326283f-6025-4674-b1eb-6c5e566a7770" width="400" style="margin-right: 10px;" />
-    >   <img src="https://github.com/user-attachments/assets/c3ebea19-8dd0-4867-b3ba-72517735da75" width="400" />
-    > </p>
-    > <p float="left">
-    >   <img src="https://github.com/user-attachments/assets/f8031383-25c2-4dec-8977-b61cca327f96" width="400" style="margin-right: 10px;" />
-    >   <img src="https://github.com/user-attachments/assets/e0eaf408-5973-440e-b508-20b5160150e9" width="400" />
     > </p>
