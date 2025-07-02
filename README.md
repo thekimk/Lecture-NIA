@@ -78,7 +78,7 @@
     >   <img src="https://github.com/user-attachments/assets/1bfa35c1-42ab-4c68-8a44-86f32735209e" width="300" style="margin-right: 10px;" />
     > </p>
     >
-    > - 실제 미래 수요예측 결과
+    > - 수요예측 모델링 성능 검증 및 실제 미래 수요예측 결과
     >
     > <p float="left">
     >   <img src="https://github.com/user-attachments/assets/1bfa35c1-42ab-4c68-8a44-86f32735209e" width="300" style="margin-right: 10px;" />
